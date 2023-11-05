@@ -45,7 +45,7 @@
 		generate_numbers()
 	}
 
-	//init_game()
+	init_game()
 
 
 	const serialize = (currentID, empty_index, prev_empty = false) => {

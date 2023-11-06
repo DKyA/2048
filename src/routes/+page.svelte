@@ -17,6 +17,8 @@
 	let death_countdown = [];
 	let endgame = false;
 	let realized_movement = false;
+	let score = 0;
+	let max_score = 0;
 
 
 	const generate_numbers = () => {
@@ -25,24 +27,47 @@
 	} 
 
 	const find_free_tiles = () => {
+
 		free_indices = []
 
-	for (let i = 0; i < Position.length; i++) {
-		if (Position[i] === 0) {
-			free_indices.push(i)
+		for (let i = 0; i < Position.length; i++) {
+
+			if (Position[i] === 0) {
+				free_indices.push(i)
+				continue;
+			}
+
+			if (Position[i] === 2048) {
+				win = true;
+			}
+
+
 		}
-		if (Position[i] === 2048) {
-			win = true;
-		}
+
 	}
 
-}
+	const update_score = () => {
+
+		score = 0;
+
+		for (let i = 0; i < Position.length; i++) {
+
+			score += Position[i]
+
+			if (score > max_score) {
+				max_score = score;
+			}
+
+		}
+
+	}
 
 	const init_game = () => {
 		find_free_tiles()
 		generate_numbers()
 		find_free_tiles()
 		generate_numbers()
+		update_score()
 	}
 
 	init_game()
@@ -56,11 +81,13 @@
 			if (currentID !== empty_index) {
 				Position[empty_index] = Position[currentID]
 				Position[currentID] = 0
+				realized_movement = true;
 			}
 			if (prev_empty !== false && Position[prev_empty] === Position[empty_index]) {
 
 				Position[prev_empty] = Position[empty_index] + Position[prev_empty]
 				Position[empty_index] = 0
+				realized_movement = true;
 
 				return false
 			}
@@ -183,6 +210,7 @@
 	const control = event => {
 
 		try {
+			realized_movement = false;
 			options[event.code]()
 
 			if (event.code === "Escape") return;
@@ -208,7 +236,11 @@
 			endgame = true
 		}
 
-		generate_numbers();
+		if (realized_movement) {
+			generate_numbers();
+		}
+
+		update_score()
 
 	}
 
@@ -216,6 +248,12 @@
 
 <svelte:window on:keydown={control} />
 <main class="field">
+
+	<aside class="score">
+		<p>Score: {score}</p>
+		<p>Best score in session: {max_score}</p>
+	</aside>
+
 	{#each Array(16).keys() as id}
 		<Tile {id}> 
 			{#if Position[id] != 0}
@@ -226,6 +264,14 @@
 	{#if endgame}
 		<div class="endgame" transition:fade>
 			<p>You Lost.</p>
+			<p>Score: {score}</p>
+		</div>
+	{/if}
+
+	{#if win}
+		<div class="endgame" transition:fade>
+			<p>You Won.</p>
+			<p>Score: {score}</p>
 		</div>
 	{/if}
 
@@ -259,7 +305,23 @@
 		top: 0;left: 0;
 		display: flex;
 		justify-content: center;
+		flex-direction: column;
 		align-items: center;
+		gap: 4px;
+	}
+
+	.score {
+
+		position: absolute;
+		top: 0;
+		right: 10px;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: left;
+		padding: 20px 10px;	
+		gap: 4px;
+
 	}
 
 </style>

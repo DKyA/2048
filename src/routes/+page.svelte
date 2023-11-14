@@ -47,16 +47,8 @@
 
 	const update_score = () => {
 
-		score = 0;
-
-		for (let i = 0; i < Position.length; i++) {
-
-			score += Position[i]
-
-			if (score > max_score) {
-				max_score = score;
-			}
-
+		if (score > max_score) {
+			max_score = score;
 		}
 
 	}
@@ -87,6 +79,8 @@
 				Position[prev_empty] = Position[empty_index] + Position[prev_empty]
 				Position[empty_index] = 0
 				realized_movement = true;
+
+				score += Position[prev_empty]
 
 				return false
 			}
@@ -195,6 +189,7 @@
 		endgame = false
 		win = false
 		init = false
+		score = 0;
 
 		init_game()
 

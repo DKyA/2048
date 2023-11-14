@@ -183,6 +183,12 @@
 	}
 
 	const restart = () => {
+
+		if (!endgame && !win && !init) {
+			endgame = true;
+			return
+		}
+
 		factor = prompted_factor;
 		Position = InitPosition();
 		death_countdown = []
@@ -199,7 +205,8 @@
 		"ArrowRight": right,
 		"ArrowUp": up,
 		"ArrowDown": down,
-		"Escape": restart
+		"Escape": restart,
+		"Enter": restart,
 
 	}
 
@@ -263,7 +270,7 @@
 		<div class="endgame" transition:fade>
 			<p>You Lost.</p>
 			<p>Score: {score}</p>
-			<input type="number" bind:value={prompted_factor}>
+			<input min=2 type="number" bind:value={prompted_factor}>
 			<button on:click={restart}>Start</button>
 		</div>
 	{/if}
@@ -272,7 +279,7 @@
 		<div class="endgame" transition:fade>
 			<p>You Won.</p>
 			<p>Score: {score}</p>
-			<input type="number" bind:value={prompted_factor}>
+			<input min=2 type="number" bind:value={prompted_factor}>
 			<button on:click={restart}>Start</button>
 		</div>
 	{/if}
@@ -281,7 +288,7 @@
 
 		<div class="endgame" transition:fade>
 			<p>Start your game.</p>
-			<input type="number" bind:value={prompted_factor}>
+			<input min=2 type="number" bind:value={prompted_factor}>
 			<button on:click={restart}>Start</button>
 		</div>
 

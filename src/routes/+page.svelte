@@ -5,12 +5,10 @@
 	import Number from "../lib/components/Number.svelte";
 	import Tile from "../lib/components/Tile.svelte";
 
-	let Position = [
-		0, 0, 0, 0,
-		0, 0, 0, 0,
-		0, 0, 0, 0,
-		0, 0, 0, 0
-	];
+	const factor = 3
+	const InitPosition = Array(factor ** 2).fill(0)
+
+	let Position = InitPosition;
 
 	let free_indices = [];
 	let win = false;
@@ -102,14 +100,14 @@
 		// Serialize left:
 
 		// Rows:
-		for (let i = 0; i < 4; i++) {
+		for (let i = 0; i < Math.sqrt(factor); i++) {
 			// Keeping track of row's empty index
-			let empty_index = i * 4;
+			let empty_index = i * factor;
 			let prev_empty = false
 
-			for (let j = 0; j < 4; j++) {
+			for (let j = 0; j < factor; j++) {
 
-				let currentID = 4 * i + j
+				let currentID = factor * i + j
 
 				if (serialize(currentID, empty_index, prev_empty)) {
 					prev_empty = empty_index
@@ -124,14 +122,14 @@
 	const right = () => {
 
 		// Rows:
-		for (let i = 0; i < 4; i++) {
+		for (let i = 0; i < factor; i++) {
 			// Keeping track of row's empty index
-			let empty_index = 3 + i * 4;
+			let empty_index = factor - 1 + i * factor;
 			let prev_empty = false
 
-			for (let j = 0; j < 4; j++) {
+			for (let j = 0; j < factor; j++) {
 
-				let currentID = 4 * (i + 1) - 1 - j
+				let currentID = factor * (i + 1) - 1 - j
 				if (serialize(currentID, empty_index, prev_empty)) {
 					prev_empty = empty_index
 					empty_index--
@@ -144,18 +142,18 @@
 	const up = () => {
 
 		// Columns:
-		for (let i = 0; i < 4; i++) {
+		for (let i = 0; i < factor; i++) {
 			// Keeping track of row's empty index
 			let empty_index = i;
 			let prev_empty = false;
 
 			// Rows
-			for (let j = 0; j < 4; j++) {
+			for (let j = 0; j < factor; j++) {
 				
-				let currentID = i + 4 *j
+				let currentID = i + factor *j
 				if (serialize(currentID, empty_index, prev_empty)) {
 					prev_empty = empty_index
-					empty_index += 4
+					empty_index += factor
 				}
 			}
 
@@ -165,17 +163,17 @@
 	const down = () => {
 
 		// Rows:
-		for (let i = 0; i < 4; i++) {
+		for (let i = 0; i < factor; i++) {
 			// Keeping track of row's empty index
-			let empty_index = i + 12;
+			let empty_index = i + Position.length - factor;
 			let prev_empty = false
 
-			for (let j = 0; j < 4; j++) {
+			for (let j = 0; j < factor; j++) {
 
-				let currentID = (12 + i) - 4 * j
+				let currentID = (Position.length - factor + i) - factor * j
 				if (serialize(currentID, empty_index,prev_empty)) {
 					prev_empty = empty_index
-					empty_index -= 4
+					empty_index -= factor
 				}
 
 			}
@@ -184,12 +182,7 @@
 	}
 
 	const restart = () => {
-		Position = [
-			0, 0, 0, 0,
-			0, 0, 0, 0,
-			0, 0, 0, 0,
-			0, 0, 0, 0
-		]
+		Position = InitPosition;
 		death_countdown = []
 		endgame = false
 		win = false
@@ -247,14 +240,14 @@
 </script>
 
 <svelte:window on:keydown={control} />
-<main class="field">
+<main class="field" style="grid-template-columns: repeat({factor}, auto);">
 
 	<aside class="score">
 		<p>Score: {score}</p>
 		<p>Best score in session: {max_score}</p>
 	</aside>
 
-	{#each Array(16).keys() as id}
+	{#each Position.keys() as id}
 		<Tile {id}> 
 			{#if Position[id] != 0}
 				<Number value = {Position[id]} />
@@ -291,7 +284,6 @@
 		border: 4px solid darkgrey;
 
 		display: grid;
-		grid-template-columns: repeat(4, auto);
 		gap: 3px;
 
 	}

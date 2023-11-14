@@ -263,6 +263,8 @@
 		<div class="endgame" transition:fade>
 			<p>You Lost.</p>
 			<p>Score: {score}</p>
+			<input type="number" bind:value={prompted_factor}>
+			<button on:click={restart}>Start</button>
 		</div>
 	{/if}
 
@@ -270,6 +272,8 @@
 		<div class="endgame" transition:fade>
 			<p>You Won.</p>
 			<p>Score: {score}</p>
+			<input type="number" bind:value={prompted_factor}>
+			<button on:click={restart}>Start</button>
 		</div>
 	{/if}
 

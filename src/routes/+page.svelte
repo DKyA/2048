@@ -5,10 +5,10 @@
 	import Number from "../lib/components/Number.svelte";
 	import Tile from "../lib/components/Tile.svelte";
 
-	const factor = 3
-	const InitPosition = Array(factor ** 2).fill(0)
-
-	let Position = InitPosition;
+	let factor = 4;
+	let prompted_factor = 4;
+	let InitPosition = () => Array(factor ** 2).fill(0)
+	let Position = InitPosition();
 
 	let free_indices = [];
 	let win = false;
@@ -17,6 +17,7 @@
 	let realized_movement = false;
 	let score = 0;
 	let max_score = 0;
+	let init = true;
 
 
 	const generate_numbers = () => {
@@ -100,7 +101,7 @@
 		// Serialize left:
 
 		// Rows:
-		for (let i = 0; i < Math.sqrt(factor); i++) {
+		for (let i = 0; i < factor; i++) {
 			// Keeping track of row's empty index
 			let empty_index = i * factor;
 			let prev_empty = false
@@ -182,10 +183,12 @@
 	}
 
 	const restart = () => {
-		Position = InitPosition;
+		factor = prompted_factor;
+		Position = InitPosition();
 		death_countdown = []
 		endgame = false
 		win = false
+		init = false
 
 		init_game()
 
@@ -201,6 +204,8 @@
 	}
 
 	const control = event => {
+
+		if (init) return;
 
 		try {
 			realized_movement = false;
@@ -266,6 +271,16 @@
 			<p>You Won.</p>
 			<p>Score: {score}</p>
 		</div>
+	{/if}
+
+	{#if init}
+
+		<div class="endgame" transition:fade>
+			<p>Start your game.</p>
+			<input type="number" bind:value={prompted_factor}>
+			<button on:click={restart}>Start</button>
+		</div>
+
 	{/if}
 
 </main>
